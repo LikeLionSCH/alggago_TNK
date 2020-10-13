@@ -3,28 +3,28 @@ require "xmlrpc/server"
 require "socket"
 require 'chipmunk'
 
-HEIGHT = 700
-TICK = 1.0/60.0
-NUM_STONES = 7
-STONE_DIAMETER = 50
-RESTITUTION = 0.9
-BOARD_FRICTION = 1.50
-STONE_FRICTION = 0.5
-ROTATIONAL_FRICTION = 0.04
-MAX_POWER = 700.0
-MAX_NUMBER = 1600000
-MAX_HIT = 6
-MAX_TIME = 17
+HEIGHT = 700 # 바둑판 크기
+TICK = 1.0/60.0 # 눈금 (1/60) -> 바둑판 60등분 
+NUM_STONES = 7 # 돌 개수
+STONE_DIAMETER = 50 # 돌 지름
+RESTITUTION = 0.9 # 반환(?)
+BOARD_FRICTION = 1.50 # 바둑판 마찰
+STONE_FRICTION = 0.5 # 돌 마찰
+ROTATIONAL_FRICTION = 0.04 # 회전 마찰
+MAX_POWER = 700.0 # 최대 파워
+MAX_NUMBER = 1600000 #
+MAX_HIT = 6 #?
+MAX_TIME = 17 # 최대 시간
 
-s = XMLRPC::Server.new(ARGV[0])
+s = XMLRPC::Server.new(ARGV[0]) # pass
 
-class MyAlggago
-  attr_accessor :env
+class MyAlggago 
+  attr_accessor :env # env -> 가상머신
 
   # my stones: [[pt1_pos_x, pt1_pos_y],...]
-  def variation (my_stones)
+  def variation (my_stones) 
     var = 0
-    if my_stones.length > 1
+    if my_stones.length > 1 
       sum = my_stones.inject([0,0]) {|acc, i| [acc[0]+i[0], acc[1]+i[1]] }
       mean = [sum[0]/my_stones.length, sum[1]/my_stones.length]
       var = my_stones.inject([0,0]) { |acc, i| [ acc[0]+ (i[0]-mean[0])**2 , acc[1] + (i[1]-mean[1])**2]}.reduce(:+) / my_stones.length
@@ -34,15 +34,15 @@ class MyAlggago
 
   def calculate(positions)
 
-    my_position = positions[0]
-    your_position = positions[1]
+    my_position = positions[0] # 내 돌의 위치
+    your_position = positions[1] # 상대 돌의 위치
 
     # Write your own codes here
-    stone_number = 0
-    x_strength = 0
-    y_strength = 0
-    message = ""
-    max_net_kill = -2
+    stone_number = 0 # 돌 번호
+    x_strength = 0 # x 힘
+    y_strength = 0 # y 힘
+    message = "" # 메세지 
+    max_net_kill = -2 
     max_var = 0
     alt = []
     alt_net_kill = -2
@@ -51,18 +51,33 @@ class MyAlggago
     beginning_time = Time.now
     middle_time = Time.now
 
+
     for my_idx in 0..my_position.length-1
-      break if max_net_kill >= MAX_HIT or middle_time - beginning_time > MAX_TIME
-      my = my_position[my_idx]
+      break if max_net_kill >= MAX_HIT or middle_time - beginning_time > MAX_TIME #max_hit == 6
+      # 시간 끝 Or 다 떨구면 break
+      # 쓸데 없는 결과는 컷
+      my = my_position[my_idx] # 내 돌의 수만큼 반복
       for your_idx in 0..your_position.length-1
         break if max_net_kill >= MAX_HIT or middle_time - beginning_time > MAX_TIME
-        your = your_position[your_idx]
-        dist = Math.sqrt((your[0] - my[0])**2 + (your[1] - my[1])**2)
-        theta = Math.acos( ( your[0] - my[0] ) /dist)
-        theta = your[1] - my[1] < 0 ? 2*Math::PI - theta : theta
-        max_alpha = Math.asin( STONE_DIAMETER / dist )
-        angular_offsets = (-4.0/5*max_alpha..4.0/5*max_alpha).step(max_alpha/5.0)
-        angular_offsets.each do | alpha |
+        your = your_position[your_idx] # 적 돌의 수만큼 반복
+
+        dist = Math.sqrt((your[0] - my[0])**2 + (your[1] - my[1])**2) # 피타고라스로 거리 구한거
+
+        theta = Math.acos( ( your[0] - my[0] ) /dist) # acos -> 주어진 주의 아크코사인값을 숫자로 반환
+        # theta = 내 돌이 상대 돌을 칠 수 있는 각도
+        theta = your[1] - my[1] < 0 ? 2*Math::PI - theta : theta # 상대 돌이 우리돌보다 위에 있으면 -> 조건 거짓 
+        # 상대 돌이 우리 돌보다 위에 있을 경우 -> 쎄타 = 360 - 쎄타 , 우리 돌이 더 우ㅣ에 있으면 세타
+        # 360 == 2pi 
+        # 상대 돌보다 우리 돌이 더 아래에 있으면 돌려서 침 
+
+        max_alpha = Math.asin( STONE_DIAMETER / dist ) #STONE_DIAMETER / dist -> 50/돌 사이의 거리 
+        # 상대 돌을 맞출 수 있는 최대 각도
+
+        angular_offsets = (-4.0/5*max_alpha..4.0/5*max_alpha).step(max_alpha/5.0) # .step -> 인자 만큼 띄엄띄엄 범위를 준다
+        # ex) (1..10).step(3) => 1 4 7 10
+        # 오차를 줄임 .
+        
+        angular_offsets.each do | alpha | # offset 안의 각각 값들을 alpha로 사용하여 반복
           break if max_net_kill >= MAX_HIT or middle_time - beginning_time > MAX_TIME
           co = MAX_POWER / dist
           powers = (my_position.length >= NUM_STONES-1 or your_position.length >= NUM_STONES-1) ? [co] : (1.0/5*co..co).step(1.0/5*co)
