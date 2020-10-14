@@ -37,13 +37,17 @@ class Simulator
             your_positions.push(json_data["your_position"][key])
         end
 
+        @positions = [my_positions, your_positions]
+
         # 모든 돌의 위치정보로 가상 게임을 생성
-        @alggago = Alggago.new([my_positions, your_positions])
+        @alggago = Alggago.new(@positions)
     end
 
     def run
         # 모든 샘플 데이터를 테스트
         for strength in @info.sample_strength do
+            @alggago.init_game(@positions)
+
             # 테스트 케이스 계산 후 돌에 물리값 적용
             @alggago.calculate(@info.index, strength["x"], strength["y"])
 
@@ -54,7 +58,7 @@ class Simulator
 
             # 돌의 개수가 줄어든 시뮬레이션 결과가 있으면 해당 결과 출력
             if @alggago.players[0].stones.length < 7 or @alggago.players[1].stones.length < 7
-                puts("white: #{@alggago.players[0].stones.length}, black: #{@alggago.players[1].stones.length}")
+                puts("black(AI): #{@alggago.players[0].stones.length}, white(User): #{@alggago.players[1].stones.length}")
             end
         end
 
@@ -128,6 +132,11 @@ class Alggago
     end
   
     def calculate(index, x_strength, y_strength)
+        if @players[0].stones.length <= index
+            puts("Error: calculate() - stone index is out of bounds")
+            return
+        end
+
         reduced_x, reduced_y = reduce_speed(x_strength, y_strength)
         @players[0].stones[index].body.v = CP::Vec2.new(reduced_x, reduced_y)
     end
