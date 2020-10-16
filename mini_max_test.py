@@ -38,7 +38,7 @@ def get_json(my_position, your_position):
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
                 # 상대 돌의 좌표를 x,y로 둔다면, 원의 둘레 위의 한 점은 x+a, y+b로 표현 가능 
-            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, 10):
+            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, 5):
                 #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                     # 루트(a^2 + b^2) = 반지름
                     # a^2 + b^2 = 반지름^2
@@ -109,30 +109,107 @@ for stone in range(len(my_position)):
 
     # 각 리스트당 정보 추가[ {stone:n, my:n, your:n, x:a, y:b}, ... ]
     for i in range(len(json_data['result'])):
-        stone_list[stone].append({'stone':stone, 'my':json_data['result'][i]['my'], 'your': json_data['result'][i]['your'], 'x': json_data['strength'][i]['x'], 'y':json_data['strength'][i]['y']})
+        stone_list[stone].append({'stone':stone, 'my':json_data['result'][i]['my'], 'your': json_data['result'][i]['your'],
+        'x': json_data['strength'][i]['x'], 'y':json_data['strength'][i]['y'], 'point': (7-json_data['result'][i]['my'])*-3 + (7-json_data['result'][i]['your'])*2})
 
+
+'''
+알고리즘1. 내돌-상대돌 개수 분석
+'''
+# # 돌 당 최고 인덱스
+# best_idx = []
+# for stone in range(len(my_position)):
+#     # 스톤별 최고의 인덱스 리스트에 추가
+#     best = 0
+#     for i in range(1, len(stone_list[stone])):
+#         if stone_list[stone][i]['my'] - stone_list[stone][i]['your'] > stone_list[stone][best]['my'] - stone_list[stone][best]['your']:
+#             best = i
+#     best_idx.append(best)
+
+# # 최고의 돌 결정
+# best_stone = 0
+# for i in range(1, len(best_idx)):
+#     if stone_list[i][best_idx[i]]['my'] - stone_list[i][best_idx[i]]['your'] > stone_list[best_stone][best_idx[best_stone]]['my'] - stone_list[best_stone][best_idx[best_stone]]['your']:
+#         best_stone = i
+
+#Return values
+# message = "tean_TKN"
+# stone_number = best_stone
+# stone_x_strength = stone_list[best_stone][best_idx[best_stone]]['x']
+# stone_y_strength = stone_list[best_stone][best_idx[best_stone]]['y']
+# result = [stone_number, stone_x_strength, stone_y_strength, message]
+
+
+'''
+알고리즘2. mini max 알고리즘
+'''
+# # 각 돌마다 point순으로 정렬
+# for stone in stone_list:
+#     for i in range(len(stone)-2):
+#         for j in range(len(stone)-1):
+#             if stone[j+1]['point'] > stone[j]['point']:
+#                 stone[j+1], stone[j] = stone[j], stone[j+1]
+
+# # 각 돌당 가장 높은 점수의 스톤 리스트에 추가
+# highest_point = []
+# for stone in range(len(stone_list)):
+#     for i in range(len(stone_list[stone])):
+#         if stone_list[stone][0]['point'] == stone_list[stone][i]['point']:
+#             highest_point.append(stone_list[stone][i])
+#         else:
+#             break
+
+# 스톤이 한개 남을때까지 mini-max 알고리즘
+# idx = 0
+# while(len(highest_point) > 1):
+#     while(idx != len(highest_point)-1):
+#         #max
+#         if(idx%2 == 0):
+#             if highest_point[idx]['point'] > highest_point[idx+1]['point']:
+#                 highest_point.remove(highest_point[idx+1])
+#             else:
+#                 highest_point.remove(highest_point[idx])
+#         #mini
+#         else:
+#             if highest_point[idx]['point'] > highest_point[idx+1]['point']:
+#                 highest_point.remove(highest_point[idx])
+#             else:
+#                 highest_point.remove(highest_point[idx+1])
+
+# toHit = highest_point.pop()
+
+# #Return values
+# message = "tean_TKN"
+# stone_number = toHit['stone']
+# stone_x_strength = toHit['x']
+# stone_y_strength = toHit['y']
+# result = [stone_number, stone_x_strength, stone_y_strength, message]
+
+
+'''
+알고리즘3. 점수
+'''
 # 돌 당 최고 인덱스
 best_idx = []
 for stone in range(len(my_position)):
     # 스톤별 최고의 인덱스 리스트에 추가
     best = 0
     for i in range(1, len(stone_list[stone])):
-        if stone_list[stone][i]['my'] - stone_list[stone][i]['your'] > stone_list[stone][best]['my'] - stone_list[stone][best]['your']:
+        if stone_list[stone][i]['point'] > stone_list[stone][best]['point']:
             best = i
     best_idx.append(best)
 
 # 최고의 돌 결정
 best_stone = 0
 for i in range(1, len(best_idx)):
-    if stone_list[i][best_idx[i]]['my'] - stone_list[i][best_idx[i]]['your'] > stone_list[best_stone][best_idx[best_stone]]['my'] - stone_list[best_stone][best_idx[best_stone]]['your']:
+    if stone_list[i][best_idx[i]]['point'] > stone_list[best_stone][best_idx[best_stone]]['point']:
         best_stone = i
 
 #Return values
-message = "aa"
+message = "tean_TKN"
 stone_number = best_stone
 stone_x_strength = stone_list[best_stone][best_idx[best_stone]]['x']
 stone_y_strength = stone_list[best_stone][best_idx[best_stone]]['y']
-
 result = [stone_number, stone_x_strength, stone_y_strength, message]
 
 
