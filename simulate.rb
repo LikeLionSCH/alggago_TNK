@@ -44,6 +44,11 @@ class Simulator
     end
 
     def run
+        # 입력파일에 결과를 추가하기 위해 json 파일 열기
+        file = File.read(@info.filename)
+        json_data = JSON.parse(file)
+        json_data["result"] = []
+
         # 모든 샘플 데이터를 테스트
         for strength in @info.sample_strength do
             @alggago.init_game(@positions)
@@ -56,6 +61,9 @@ class Simulator
                 @alggago.update
             end
 
+            # 결과 데이터를 hash에 저장
+            json_data["result"].push({"my" => @alggago.players[0].stones.length, "your" => @alggago.players[1].stones.length})
+
             # 돌의 개수가 줄어든 시뮬레이션 결과가 있으면 해당 결과 출력
             if @alggago.players[0].stones.length < 7 or @alggago.players[1].stones.length < 7
                 puts("black(AI): #{@alggago.players[0].stones.length}, white(User): #{@alggago.players[1].stones.length}")
@@ -63,7 +71,7 @@ class Simulator
         end
 
         # 전체 시뮬레이션 결과를 파일로 출력
-        # File.write('./#{filename}', JSON.dump(json_string))
+        File.write("./#{@info.filename}", JSON.dump(json_data))
     end
 end
 
