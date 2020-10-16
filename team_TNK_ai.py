@@ -1,12 +1,14 @@
 import sys
 import math
 import json
+from collections import OrderedDict
 
 # temp.json
 with open('temp.json') as json_file:
     json_data = json.load(json_file)
 
 MAX_NUMBER = 16000
+STONE_DIAMETER = 25 # 반지름
 
 # 위치 정보 가져옴
 my_position = []
@@ -102,4 +104,4 @@ def get_json(json_data):
 # result = [stone_number, stone_x_strength, stone_y_strength, message]
 
 
-print(str(result)[1:-1].replace("'", ""))
+# print(str(result)[1:-1].replace("'", ""))
