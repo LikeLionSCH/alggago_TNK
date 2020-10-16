@@ -44,7 +44,7 @@ class MyAlggago
       f.write(JSON.pretty_generate(tempHash))
     end
 
-    result_from_python = `python team_TNK_ai.py.py`
+    result_from_python = `python mini_max_test.py`
 
     results = result_from_python.split(",")
 
