@@ -38,7 +38,7 @@ def get_json(my_position, your_position):
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
                 # 상대 돌의 좌표를 x,y로 둔다면, 원의 둘레 위의 한 점은 x+a, y+b로 표현 가능 
-            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, 5):
+            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, 2):
                 #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                     # 루트(a^2 + b^2) = 반지름
                     # a^2 + b^2 = 반지름^2
@@ -64,7 +64,7 @@ def get_json(my_position, your_position):
         strength_list = []
         for pos in locations_to_hit:
             # 각 파워도 고려
-            for power in [2,5,7]:
+            for power in [2,4,7]:
                 strength_list.append( [ (pos[0]-my_position[my_idx][0]) * power, (pos[1]-my_position[my_idx][1]) * power ] )
 
         # json파일로 저장
@@ -159,10 +159,10 @@ for stone in range(len(my_position)):
 #         else:
 #             break
 
-# 스톤이 한개 남을때까지 mini-max 알고리즘
-# idx = 0
+# #스톤이 한 개 남을때까지 mini-max 알고리즘
 # while(len(highest_point) > 1):
-#     while(idx != len(highest_point)-1):
+#     idx = 0
+#     while(idx < len(highest_point)-1):
 #         #max
 #         if(idx%2 == 0):
 #             if highest_point[idx]['point'] > highest_point[idx+1]['point']:
@@ -175,6 +175,7 @@ for stone in range(len(my_position)):
 #                 highest_point.remove(highest_point[idx])
 #             else:
 #                 highest_point.remove(highest_point[idx+1])
+#         idx += 1
 
 # toHit = highest_point.pop()
 
