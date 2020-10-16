@@ -22,7 +22,7 @@ for key in json_data["your_position"].keys():
 
 
 # 칠 수 있는 경우의 수 json파일로 추출
-def get_json(json_data):
+def get_json(my_position, your_position):
     
     #json저장에 사용됨
     stone = OrderedDict() 
@@ -38,7 +38,7 @@ def get_json(json_data):
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
                 # 상대 돌의 좌표를 x,y로 둔다면, 원의 둘레 위의 한 점은 x+a, y+b로 표현 가능 
-            for a in range(-1*STONE_DIAMETER,STONE_DIAMETER+1,10):
+            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, 10):
                 #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                     # 루트(a^2 + b^2) = 반지름
                     # a^2 + b^2 = 반지름^2
@@ -64,7 +64,7 @@ def get_json(json_data):
         strength_list = []
         for pos in locations_to_hit:
             # 각 파워도 고려
-            for power in [2,5]:
+            for power in [2,5,7]:
                 strength_list.append( [ (pos[0]-my_position[my_idx][0]) * power, (pos[1]-my_position[my_idx][1]) * power ] )
 
         # json파일로 저장
@@ -77,7 +77,7 @@ def get_json(json_data):
 
 
 # get_json()함수 실행 후 simulate
-get_json(json_data)
+get_json(my_position, your_position)
 
 # 스레드 개수와 스레드 리스트
 thread_count = len(my_position)
@@ -95,49 +95,44 @@ for i in range(thread_count):
 for thread in threads:
     thread.join()
     
-print("Finished Simulating with Multi Threading")
+# print("Finished Simulating with Multi Threading")
 
 
 # 시뮬레이트 결과 뽑아옴
-result_list = []
-for i in range(len(my_position)):
-    with open('stone%d.json' %(i)) as json_file:
+stone_list = []
+for stone in range(len(my_position)):
+    stone_list.append([])
+
+    # 시뮬 결과 가져옴
+    with open('stone%d.json' %(stone)) as json_file:
         json_data = json.load(json_file)
 
-    for result in json_data['result']:
-        result_list.append({'stone':i, 'my':result['my'], 'your':result['your']})
+    # 각 리스트당 정보 추가[ {stone:n, my:n, your:n, x:a, y:b}, ... ]
+    for i in range(len(json_data['result'])):
+        stone_list[stone].append({'stone':stone, 'my':json_data['result'][i]['my'], 'your': json_data['result'][i]['your'], 'x': json_data['strength'][i]['x'], 'y':json_data['strength'][i]['y']})
 
+# 돌 당 최고 인덱스
+best_idx = []
+for stone in range(len(my_position)):
+    # 스톤별 최고의 인덱스 리스트에 추가
+    best = 0
+    for i in range(1, len(stone_list[stone])):
+        if stone_list[stone][i]['my'] - stone_list[stone][i]['your'] > stone_list[stone][best]['my'] - stone_list[stone][best]['your']:
+            best = i
+    best_idx.append(best)
 
-best_idx = 0
-for i in range(1,len(result_list)):
-    if result_list[i]['my'] - result_list[i]['your'] > result_list[best_idx]['my'] - result_list[best_idx]['your']:
-        best_idx = i
-
-
-
-
-toHitStone = result_list[best_idx]['stone']
-numOfMinus = 0
-# if i가 0이면 break
-for i in range(len(my_position)):
-    if toHitStone == 0:
-        break
-    if i < toHitStone:
-        with open('stone%d.json' %(i)) as json_file:
-            json_data = json.load(json_file)
-        numOfMinus += len(json_data["strength"])
-    else:
-        break
-
-# 최고 돌 경우의수 가져옴
-with open('stone%d.json' %(result_list[best_idx]['stone'])) as json_file:
-        json_data = json.load(json_file)
+# 최고의 돌 결정
+best_stone = 0
+for i in range(1, len(best_idx)):
+    if stone_list[i][best_idx[i]]['my'] - stone_list[i][best_idx[i]]['your'] > stone_list[best_stone][best_idx[best_stone]]['my'] - stone_list[best_stone][best_idx[best_stone]]['your']:
+        best_stone = i
 
 #Return values
 message = "aa"
-stone_number = toHitStone
-stone_x_strength = json_data['strength'][best_idx-numOfMinus]['x']
-stone_y_strength = json_data['strength'][best_idx-numOfMinus]['y']
+stone_number = best_stone
+stone_x_strength = stone_list[best_stone][best_idx[best_stone]]['x']
+stone_y_strength = stone_list[best_stone][best_idx[best_stone]]['y']
+
 result = [stone_number, stone_x_strength, stone_y_strength, message]
 
 
