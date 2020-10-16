@@ -75,17 +75,6 @@ def get_json(json_data):
         with open('stone'+str(my_idx)+'.json', 'w') as jsonFile:
             json.dump(stone, jsonFile, indent="\t")
 
-        # 힘 리스트 정렬시켜서 리턴
-        # distance = []
-        # for strength in strength_list:
-        #     distance.append(math.sqrt(strength[0]*strength[0] + strength[1]*strength[1]))
-        # for i in range(len(distance)-2):
-        #     for j in range(len(distance)-1):
-        #         if distance[j]> distance[j+1]:
-        #             distance[j], distance[j+1] = distance[j+1], distance[j]
-        #             strength_list[j], strength_list[j+1] = strength_list[j+1], strength_list[j]
-        # return strength_list
-
 
 # get_json()함수 실행 후 simulate
 get_json(json_data)
@@ -95,7 +84,6 @@ thread_count = len(my_position)
 threads = []
 
 def alggago_thread(i):
-# for i in range(len(my_position)):
     os.system('ruby simulate.rb stone%d.json' %(i))
 
 for i in range(thread_count):
@@ -130,6 +118,7 @@ for i in range(1,len(result_list)):
 
 toHitStone = result_list[best_idx]['stone']
 numOfMinus = 0
+# if i가 0이면 break
 for i in range(len(my_position)):
     if i < toHitStone:
         with open('stone%d.json' %(i)) as json_file:
@@ -143,11 +132,6 @@ with open('stone%d.json' %(result_list[best_idx]['stone'])) as json_file:
         json_data = json.load(json_file)
 
 #Return values
-# message = ""
-# stone_number = current_stone_number
-# stone_x_strength = x_length * 5000
-# stone_y_strength = y_length * 5000
-# result = [stone_number, stone_x_strength, stone_y_strength, message]
 message = "aa"
 stone_number = toHitStone
 stone_x_strength = json_data['strength'][best_idx-numOfMinus]['x']
