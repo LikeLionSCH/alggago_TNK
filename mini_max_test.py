@@ -3,6 +3,7 @@ import math
 import json
 from collections import OrderedDict
 import os
+import threading
 
 # temp.json
 with open('temp.json') as json_file:
@@ -97,8 +98,25 @@ def get_json(json_data):
 
 # get_json()함수 실행 후 simulate
 get_json(json_data)
-for i in range(len(my_position)):
+
+# 스레드 개수와 스레드 리스트
+thread_count = len(my_position)
+threads = []
+
+def alggago_thread(i):
+# for i in range(len(my_position)):
     os.system('ruby simulate.rb stone%d.json' %(i))
+
+for i in range(thread_count):
+    thread = threading.Thread(target=alggago_thread, args=(i,))
+    thread.start()
+    threads.append(thread)
+
+# 메인 스레드는 각 스레드의 작업이 모두 끝날 때까지 대기
+for thread in threads:
+    thread.join()
+    
+print("Finished Simulating with Multi Threading")
 
 # 시뮬레이트 결과 뽑아옴
 result_list = []
@@ -128,11 +146,3 @@ with open('stone%d.json' %(result_list[best_idx]['stone'])) as json_file:
 # stone_x_strength = x_length * 5000
 # stone_y_strength = y_length * 5000
 # result = [stone_number, stone_x_strength, stone_y_strength, message]
-message = "aa"
-stone_number = result_list[best_idx]['stone']
-stone_x_strength = json_data2['strength'][best_idx]['x']
-stone_y_strength = json_data2['strength'][best_idx]['y']
-result = [stone_number, stone_x_strength, stone_y_strength, message]
-
-
-print(str(result)[1:-1].replace("'", ""))
