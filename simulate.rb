@@ -65,13 +65,13 @@ class Simulator
             json_data["result"].push({"my" => @alggago.players[0].stones.length, "your" => @alggago.players[1].stones.length})
 
             # 돌의 개수가 줄어든 시뮬레이션 결과가 있으면 해당 결과 출력
-            if @alggago.players[0].stones.length < 7 or @alggago.players[1].stones.length < 7
-                puts("black(AI): #{@alggago.players[0].stones.length}, white(User): #{@alggago.players[1].stones.length}")
-            end
+            # if @alggago.players[0].stones.length < 7 or @alggago.players[1].stones.length < 7
+            #     puts("black(AI): #{@alggago.players[0].stones.length}, white(User): #{@alggago.players[1].stones.length}")
+            # end
         end
 
         # 전체 시뮬레이션 결과를 파일로 출력
-        File.write("./#{@info.filename}", JSON.dump(json_data))
+        File.write("./#{@info.filename}", JSON.pretty_generate(json_data))
     end
 end
 
