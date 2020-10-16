@@ -45,7 +45,7 @@ def get_json(json_data):
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
                 # 상대 돌의 좌표를 x,y로 둔다면, 원의 둘레 위의 한 점은 x+a, y+b로 표현 가능 
-            for a in range(-1*STONE_DIAMETER,STONE_DIAMETER+1,20):
+            for a in range(-1*STONE_DIAMETER,STONE_DIAMETER+1,10):
                 #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                     # 루트(a^2 + b^2) = 반지름
                     # a^2 + b^2 = 반지름^2
@@ -71,7 +71,7 @@ def get_json(json_data):
         strength_list = []
         for pos in locations_to_hit:
             # 각 파워도 고려
-            for power in [2]:
+            for power in [2,5]:
                 strength_list.append( [ (pos[0]-my_position[my_idx][0]) * power, (pos[1]-my_position[my_idx][1]) * power ] )
 
         # json파일로 저장
@@ -94,11 +94,28 @@ def get_json(json_data):
         # return strength_list
 
 
-
 # get_json()함수 실행 후 simulate
 get_json(json_data)
-for i in range(len(my_position)):
+
+# 스레드 개수와 스레드 리스트
+thread_count = len(my_position)
+threads = []
+
+def alggago_thread(i):
+# for i in range(len(my_position)):
     os.system('ruby simulate.rb stone%d.json' %(i))
+
+for i in range(thread_count):
+    thread = threading.Thread(target=alggago_thread, args=(i,))
+    thread.start()
+    threads.append(thread)
+
+# 메인 스레드는 각 스레드의 작업이 모두 끝날 때까지 대기
+for thread in threads:
+    thread.join()
+    
+print("Finished Simulating with Multi Threading")
+
 
 # 시뮬레이트 결과 뽑아옴
 result_list = []
