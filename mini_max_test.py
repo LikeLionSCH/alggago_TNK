@@ -120,6 +120,8 @@ toHitStone = result_list[best_idx]['stone']
 numOfMinus = 0
 # if i가 0이면 break
 for i in range(len(my_position)):
+    if toHitStone == 0:
+        break
     if i < toHitStone:
         with open('stone%d.json' %(i)) as json_file:
             json_data = json.load(json_file)
