@@ -23,8 +23,6 @@ for key in json_data["your_position"].keys():
 
 # 칠 수 있는 경우의 수 json파일로 추출
 def get_json(json_data):
-    my_position = []
-    your_position = []
     
     #json저장에 사용됨
     stone = OrderedDict() 
