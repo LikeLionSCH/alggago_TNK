@@ -25,12 +25,6 @@ for key in json_data["your_position"].keys():
 def get_json(json_data):
     my_position = []
     your_position = []
-
-    # 돌의 위치 정보
-    for key in json_data["my_position"].keys():
-        my_position.append(json_data["my_position"][key])
-    for key in json_data["your_position"].keys():
-        your_position.append(json_data["your_position"][key])
     
     #json저장에 사용됨
     stone = OrderedDict() 
@@ -143,6 +137,8 @@ for i in range(len(my_position)):
         with open('stone%d.json' %(i)) as json_file:
             json_data = json.load(json_file)
         numOfMinus += len(json_data["strength"])
+    else:
+        break
 
 # 최고 돌 경우의수 가져옴
 with open('stone%d.json' %(result_list[best_idx]['stone'])) as json_file:
