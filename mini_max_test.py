@@ -23,6 +23,15 @@ for key in json_data["your_position"].keys():
 
 # 칠 수 있는 경우의 수 json파일로 추출
 def get_json(my_position, your_position):
+
+    # 상대돌 개수에 따라 탐색하는 범위 조절
+    if len(your_position) >= 5:
+        search_space = 5
+    elif len(your_position) <= 2:
+        search_space = 1
+    else:
+        search_space = 2
+    
     
     #json저장에 사용됨
     stone = OrderedDict() 
@@ -38,7 +47,7 @@ def get_json(my_position, your_position):
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
                 # 상대 돌의 좌표를 x,y로 둔다면, 원의 둘레 위의 한 점은 x+a, y+b로 표현 가능 
-            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, 2):
+            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, search_space):
                 #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                     # 루트(a^2 + b^2) = 반지름
                     # a^2 + b^2 = 반지름^2
