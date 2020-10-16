@@ -3,7 +3,6 @@ import math
 import json
 from collections import OrderedDict
 import os
-import threading
 
 # temp.json
 with open('temp.json') as json_file:
@@ -46,7 +45,7 @@ def get_json(json_data):
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
                 # 상대 돌의 좌표를 x,y로 둔다면, 원의 둘레 위의 한 점은 x+a, y+b로 표현 가능 
-            for a in range(-1*STONE_DIAMETER,STONE_DIAMETER+1,10):
+            for a in range(-1*STONE_DIAMETER,STONE_DIAMETER+1,20):
                 #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                     # 루트(a^2 + b^2) = 반지름
                     # a^2 + b^2 = 반지름^2
@@ -98,25 +97,8 @@ def get_json(json_data):
 
 # get_json()함수 실행 후 simulate
 get_json(json_data)
-
-# 스레드 개수와 스레드 리스트
-thread_count = len(my_position)
-threads = []
-
-def alggago_thread(i):
-# for i in range(len(my_position)):
+for i in range(len(my_position)):
     os.system('ruby simulate.rb stone%d.json' %(i))
-
-for i in range(thread_count):
-    thread = threading.Thread(target=alggago_thread, args=(i,))
-    thread.start()
-    threads.append(thread)
-
-# 메인 스레드는 각 스레드의 작업이 모두 끝날 때까지 대기
-for thread in threads:
-    thread.join()
-    
-print("Finished Simulating with Multi Threading")
 
 # 시뮬레이트 결과 뽑아옴
 result_list = []
@@ -134,11 +116,19 @@ for i in range(1,len(result_list)):
         best_idx = i
 
 
+
+
+toHitStone = result_list[best_idx]['stone']
+numOfMinus = 0
+for i in range(len(my_position)):
+    if i < toHitStone:
+        with open('stone%d.json' %(i)) as json_file:
+            json_data = json.load(json_file)
+        numOfMinus += len(json_data["strength"])
+
 # 최고 돌 경우의수 가져옴
 with open('stone%d.json' %(result_list[best_idx]['stone'])) as json_file:
-        json_data2 = json.load(json_file)
-
-
+        json_data = json.load(json_file)
 
 #Return values
 # message = ""
@@ -146,3 +136,11 @@ with open('stone%d.json' %(result_list[best_idx]['stone'])) as json_file:
 # stone_x_strength = x_length * 5000
 # stone_y_strength = y_length * 5000
 # result = [stone_number, stone_x_strength, stone_y_strength, message]
+message = "aa"
+stone_number = toHitStone
+stone_x_strength = json_data['strength'][best_idx-numOfMinus]['x']
+stone_y_strength = json_data['strength'][best_idx-numOfMinus]['y']
+result = [stone_number, stone_x_strength, stone_y_strength, message]
+
+
+print(str(result)[1:-1].replace("'", ""))

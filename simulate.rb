@@ -76,6 +76,7 @@ class Simulator
 end
 
 
+HEIGHT = 700
 TICK = 1.0/60.0
 STONE_DIAMETER = 50
 RESTITUTION = 0.9
