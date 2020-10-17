@@ -2,6 +2,17 @@ import json
 import math
 import heapq
 
+"""
+선생님들 고생 많으셨습니다...
+get_high_score_cases() 함수가 원래는 case class 를 반환 해주어야 하는데
+제가 아직 거기까지 능력이 안돼 일단 점수, 내 돌의 index, 돌의 세기(strenth), 
+내 돌들의 위치 (position), 상대 돌들의 위치 (positions)를 반환하는 함수로 만들어 놨슴당
+그래도 아직 점수 중복이 많이 되는 것 같아요. 이부분 조금만 보완 하면 아주 좋을 것 같습니당
+그렇다면 저는 이만 들어가보겠습니다. 
+사랑해요 선생님들 하트하트하트
+- 태완 - 
+"""
+
 def get_high_score_cases(filenames,count):
     """ 가장 점수 높은 몇가지 케이스를 반환하는 함수 """
     # filenames -> json파일의 이름을 list로 입력
@@ -16,8 +27,8 @@ def get_high_score_cases(filenames,count):
         for i in range(len(json_data['result'])):
             my_stones = len(json_data['result'][i]['my']) # 내 남은 돌의 개수 계산
             your_stones = len(json_data['result'][i]['your']) # 상대 남은 돌의 개수 계산
-            isMoongchim(json_data['result'][i]['my'],json_data['result'][i]['your'])
-            score = get_score(my_stones,your_stones) # 점수 계싼
+            mc = isMoongchim(json_data['result'][i]['my'],json_data['result'][i]['your'])
+            score = get_score(my_stones,your_stones,mc['my_point'],mc['your_point']) # 점수 계싼
             heapq.heappush( 
                 stone_info,(
                     score, # 점수
@@ -36,13 +47,12 @@ def get_high_score_cases(filenames,count):
         case.append(heapq.heappop(stone_info))
 
 
-    # for list in stone_info:
-    #     print(list)
-    # print("")
-    # for list in case:
-    #     print(list)
+    for list in stone_info:
+        print(list)
+    print("")
+    for list in case:
+        print(list)
     
-
     return case
     
 
@@ -103,32 +113,19 @@ def isMoongchim(my_position, your_position):
     else:
         your_point = your_num
 
-    print(my_point)
-    print(your_point)
+    #print(my_point)
+    #print(your_point)
     return {'my_point': my_point, "your_point": your_point}
 
 
-# def get_score(my_stone_num,opp_stone_num,my_stone_point,opp_stone_point):
-#     """ 남아있는 돌의 수를 바탕으로 점수 계산하는 함수  """
-#     # my_stone_num -> 남은 우리 돌의 개수 
-#     # opp_stone_num -> 남은 상대편 돌의 개수
-
-#     # 우리 돌을 잃으면 -3, 상대 돌을 까면 +2 => 최종 점수 계산 후 최대값 도출
-#     my_score = (7 - my_stone_num) * -30 + my_stone_point # 떨어진 우리 돌의 개수 * -3
-#     opp_score = (7 - opp_stone_num) * 20 + opp_stone_point # 떨어진 상대 돌의 개수 * +2
-    
-#     total_score = my_score + opp_score # 최종 점수 도출
-
-#     return total_score #최종 점수 반환
-
-def get_score(my_stone_num,opp_stone_num):
+def get_score(my_stone_num,opp_stone_num,my_stone_point,opp_stone_point):
     """ 남아있는 돌의 수를 바탕으로 점수 계산하는 함수  """
     # my_stone_num -> 남은 우리 돌의 개수 
     # opp_stone_num -> 남은 상대편 돌의 개수
 
     # 우리 돌을 잃으면 -3, 상대 돌을 까면 +2 => 최종 점수 계산 후 최대값 도출
-    my_score = (7 - my_stone_num) * -30 # 떨어진 우리 돌의 개수 * -3
-    opp_score = (7 - opp_stone_num) * 20# 떨어진 상대 돌의 개수 * +2
+    my_score = (7 - my_stone_num) * -30 + my_stone_point # 떨어진 우리 돌의 개수 * -3
+    opp_score = (7 - opp_stone_num) * 20 + opp_stone_point # 떨어진 상대 돌의 개수 * +2
     
     total_score = my_score + opp_score # 최종 점수 도출
 
@@ -136,18 +133,14 @@ def get_score(my_stone_num,opp_stone_num):
 
 
 
-
-
-
-
 """ codes for test """
 filenames = []
-filenames.append("stone0.json")
+#filenames.append("stone0.json")
 filenames.append("stone1.json")
-filenames.append("stone2.json")
+#filenames.append("stone2.json")
 filenames.append("stone3.json")
-filenames.append("stone4.json")
+#filenames.append("stone4.json")
 filenames.append("stone5.json")
-filenames.append("stone6.json")
+#filenames.append("stone6.json")
 
 get_high_score_cases(filenames,3)
