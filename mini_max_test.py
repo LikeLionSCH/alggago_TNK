@@ -21,6 +21,7 @@ for key in json_data["your_position"].keys():
     your_position.append(json_data["your_position"][key])
 
 
+
 # 칠 수 있는 경우의 수 json파일로 추출
 def get_json(my_position, your_position):
 
@@ -118,8 +119,8 @@ for stone in range(len(my_position)):
 
     # 각 리스트당 정보 추가[ {stone:n, my:n, your:n, x:a, y:b}, ... ]
     for i in range(len(json_data['result'])):
-        stone_list[stone].append({'stone':stone, 'my':json_data['result'][i]['my'], 'your': json_data['result'][i]['your'],
-        'x': json_data['strength'][i]['x'], 'y':json_data['strength'][i]['y'], 'point': (7-json_data['result'][i]['my'])*-3 + (7-json_data['result'][i]['your'])*2})
+        stone_list[stone].append({'stone':stone, 'my':len(json_data['result'][i]['my']), 'your': len(json_data['result'][i]['your']),
+        'x': json_data['strength'][i]['x'], 'y':json_data['strength'][i]['y'], 'point': (7-len(json_data['result'][i]['my']))*-3 + (7-len(json_data['result'][i]['your']))*2})
 
 
 '''
