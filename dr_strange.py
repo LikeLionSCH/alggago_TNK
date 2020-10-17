@@ -12,10 +12,11 @@ class Case:
     GAME_STATE_PLAYING = 3
     GAME_STATE_DRAW = 4
 
-    def __init__(self, score, strength, positions):
+    def __init__(self, score, strength, positions, index):
         self.score = score
         self.strength = strength
         self.positions = positions
+        self.index = index
 
     def game_state():
         #남아있는 상대 돌이 없고, 우리 돌이 한개 이상 있으면 승리
