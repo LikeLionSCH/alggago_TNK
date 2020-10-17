@@ -2,6 +2,7 @@ import json
 import math
 from collections import OrderedDict
 import threading
+import os
 
 class Case:
     GAME_STATE_UNKNOWN = 0
@@ -84,20 +85,18 @@ def generate_json(prefix, my_position, your_position):
 # 만들어진 json파일로 시뮬레이션 돌리기
 # 매개변수: filenames
 def simulate(filenames):
-    thread_count = len(filenames)
     threads = []
-    for filename in filenames:
-        # 스레드 개수와 스레드 리스트
-        def alggago_thread(filename):
-            os.system(f'ruby simulate.rb {filename}')
-        
-        for i in range(thread_count):
-            thread = threading.Thread(target=alggago_thread, args=(thread_count,))
-            thread.start()
-            threads.append(thread)
 
-        for thread in threads:
-            thread.join()
+    def alggago_thread(filename):
+        os.system(f'ruby simulate.rb {filename}')
+
+    # 스레드 개수와 스레드 리스트        
+    for filename in filenames:
+        thread = threading.Thread(target=alggago_thread, args=(filename,))
+        thread.start()
+        threads.append(thread)
+    for thread in threads:
+        thread.join()
 
 
 # 파일 이름을 받아 최상위 3개 전략의 최고점수 및 힘, 위치값 반환
