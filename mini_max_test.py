@@ -89,7 +89,6 @@ def generate_json(prefix, my_position, your_position):
             json.dump(stone, jsonFile, indent="\t")
         filenames.append(prefix+'stone'+str(my_idx)+'.json')
 
-    print(filenames)
     return filenames
 
 
