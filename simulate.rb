@@ -62,7 +62,10 @@ class Simulator
             end
 
             # 결과 데이터를 hash에 저장
-            json_data["result"].push({"my" => @alggago.players[0].stones.length, "your" => @alggago.players[1].stones.length})
+            json_data["result"].push({
+                "my" => @alggago.players[0].stones.map { |stone| { "x" => stone.body.p.x, "y" => stone.body.p.y} },
+                "your" => @alggago.players[1].stones.map { |stone| { "x" => stone.body.p.x, "y" => stone.body.p.y } }
+            })
 
             # 돌의 개수가 줄어든 시뮬레이션 결과가 있으면 해당 결과 출력
             # if @alggago.players[0].stones.length < 7 or @alggago.players[1].stones.length < 7
