@@ -1,6 +1,7 @@
 import json
 import math
 from collections import OrderedDict
+import threading
 
 class Case:
     GAME_STATE_UNKNOWN = 0
@@ -30,7 +31,7 @@ class Case:
         # 그 외의 경우에는 무승부
         return GAME_STATE_PLAYING
 
-
+# 매개변수: prefix(파일 이름 접두사), my_position(), your_posotion
 def generate_json(prefix, my_position, your_position):
     STONE_DIAMETER = 25
     search_space = 10   #간격 느슨하게
@@ -80,10 +81,27 @@ def generate_json(prefix, my_position, your_position):
             json.dump(stone, jsonFile, indent="\t")
 
 
-def simulate():
-    pass
+# 만들어진 json파일로 시뮬레이션 돌리기
+# 매개변수: filenames
+def simulate(filenames):
+    thread_count = len(filenames)
+    threads = []
+    for filename in filenames:
+        # 스레드 개수와 스레드 리스트
+        def alggago_thread(filename):
+            os.system(f'ruby simulate.rb {filename}')
+        
+        for i range(thread_count):
+            thread = threading.Thread(target=alggago_thread, args=(thread_count,))
+            thread.start()
+            threads.append(thread)
+
+        for thread in threads:
+            thread.join()
 
 
+# 파일 이름을 받아 최상위 3개 전략의 최고점수 및 힘, 위치값 반환
+# 매개변수: filenames, count(뿌리 개수 3)
 def get_high_score_cases():
     pass
 
