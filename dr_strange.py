@@ -91,7 +91,7 @@ def simulate(filenames):
         def alggago_thread(filename):
             os.system(f'ruby simulate.rb {filename}')
         
-        for i range(thread_count):
+        for i in range(thread_count):
             thread = threading.Thread(target=alggago_thread, args=(thread_count,))
             thread.start()
             threads.append(thread)
