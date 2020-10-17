@@ -73,7 +73,7 @@ def get_json(my_position, your_position):
         strength_list = []
         for pos in locations_to_hit:
             # 각 파워도 고려
-            for power in [2,4,7]:
+            for power in [2,7]:
                 strength_list.append( [ (pos[0]-my_position[my_idx][0]) * power, (pos[1]-my_position[my_idx][1]) * power ] )
 
         # json파일로 저장
@@ -152,75 +152,77 @@ for stone in range(len(my_position)):
 '''
 알고리즘2. mini max 알고리즘
 '''
-# # 각 돌마다 point순으로 정렬
-# for stone in stone_list:
-#     for i in range(len(stone)-2):
-#         for j in range(len(stone)-1):
-#             if stone[j+1]['point'] > stone[j]['point']:
-#                 stone[j+1], stone[j] = stone[j], stone[j+1]
+# 각 돌마다 point순으로 정렬
+for stone in stone_list:
+    for i in range(len(stone)-2):
+        for j in range(len(stone)-1):
+            if stone[j+1]['point'] > stone[j]['point']:
+                stone[j+1], stone[j] = stone[j], stone[j+1]
 
-# # 각 돌당 가장 높은 점수의 스톤 리스트에 추가
-# highest_point = []
-# for stone in range(len(stone_list)):
-#     for i in range(len(stone_list[stone])):
-#         if stone_list[stone][0]['point'] == stone_list[stone][i]['point']:
-#             highest_point.append(stone_list[stone][i])
-#         else:
-#             break
+# 각 돌당 가장 높은 점수의 스톤 리스트에 추가
+highest_point = []
+for stone in range(len(stone_list)):
+    for i in range(len(stone_list[stone])):
+        if stone_list[stone][0]['point'] == stone_list[stone][i]['point']:
+            highest_point.append(stone_list[stone][i])
+        else:
+            break
 
-# #스톤이 한 개 남을때까지 mini-max 알고리즘
-# while(len(highest_point) > 1):
-#     idx = 0
-#     while(idx < len(highest_point)-1):
-#         #max
-#         if(idx%2 == 0):
-#             if highest_point[idx]['point'] > highest_point[idx+1]['point']:
-#                 highest_point.remove(highest_point[idx+1])
-#             else:
-#                 highest_point.remove(highest_point[idx])
-#         #mini
-#         else:
-#             if highest_point[idx]['point'] > highest_point[idx+1]['point']:
-#                 highest_point.remove(highest_point[idx])
-#             else:
-#                 highest_point.remove(highest_point[idx+1])
-#         idx += 1
+#스톤이 한 개 남을때까지 mini-max 알고리즘
+while(len(highest_point) > 1):
+    idx = 0
+    turn = 1
+    while(idx < len(highest_point)-1):
+        #max
+        if(turn > 0):
+            if highest_point[idx]['point'] > highest_point[idx+1]['point']:
+                highest_point.remove(highest_point[idx+1])
+            else:
+                highest_point.remove(highest_point[idx])
+        #mini
+        else:
+            if highest_point[idx]['point'] > highest_point[idx+1]['point']:
+                highest_point.remove(highest_point[idx])
+            else:
+                highest_point.remove(highest_point[idx+1])
+        idx += 1
+    turn *= -1
 
-# toHit = highest_point.pop()
+toHit = highest_point.pop()
 
-# #Return values
-# message = "tean_TKN"
-# stone_number = toHit['stone']
-# stone_x_strength = toHit['x']
-# stone_y_strength = toHit['y']
-# result = [stone_number, stone_x_strength, stone_y_strength, message]
+#Return values
+message = "tean_TKN"
+stone_number = toHit['stone']
+stone_x_strength = toHit['x']
+stone_y_strength = toHit['y']
+result = [stone_number, stone_x_strength, stone_y_strength, message]
 
 
 '''
 알고리즘3. 점수
 '''
-# 돌 당 최고 인덱스
-best_idx = []
-for stone in range(len(my_position)):
-    # 스톤별 최고의 인덱스 리스트에 추가
-    best = 0
-    for i in range(1, len(stone_list[stone])):
-        if stone_list[stone][i]['point'] > stone_list[stone][best]['point']:
-            best = i
-    best_idx.append(best)
+# # 돌 당 최고 인덱스
+# best_idx = []
+# for stone in range(len(my_position)):
+#     # 스톤별 최고의 인덱스 리스트에 추가
+#     best = 0
+#     for i in range(1, len(stone_list[stone])):
+#         if stone_list[stone][i]['point'] > stone_list[stone][best]['point']:
+#             best = i
+#     best_idx.append(best)
 
-# 최고의 돌 결정
-best_stone = 0
-for i in range(1, len(best_idx)):
-    if stone_list[i][best_idx[i]]['point'] > stone_list[best_stone][best_idx[best_stone]]['point']:
-        best_stone = i
+# # 최고의 돌 결정
+# best_stone = 0
+# for i in range(1, len(best_idx)):
+#     if stone_list[i][best_idx[i]]['point'] > stone_list[best_stone][best_idx[best_stone]]['point']:
+#         best_stone = i
 
-#Return values
-message = "tean_TKN"
-stone_number = best_stone
-stone_x_strength = stone_list[best_stone][best_idx[best_stone]]['x']
-stone_y_strength = stone_list[best_stone][best_idx[best_stone]]['y']
-result = [stone_number, stone_x_strength, stone_y_strength, message]
+# #Return values
+# message = "tean_TKN"
+# stone_number = best_stone
+# stone_x_strength = stone_list[best_stone][best_idx[best_stone]]['x']
+# stone_y_strength = stone_list[best_stone][best_idx[best_stone]]['y']
+# result = [stone_number, stone_x_strength, stone_y_strength, message]
 
 
 print(str(result)[1:-1].replace("'", ""))
