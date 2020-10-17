@@ -1,13 +1,28 @@
 import heapq
 
-def get_score(my_stone_num,opp_stone_num):
+def get_score(my_stone_num,opp_stone_num,my_stone_near,opp_stone_near):
     """ 남아있는 돌의 수를 바탕으로 점수 계산하는 함수  """
     # my_stone_num -> 남은 우리 돌의 개수 
     # opp_stone_num -> 남은 상대편 돌의 개수
 
     # 우리 돌을 잃으면 -3, 상대 돌을 까면 +2 => 최종 점수 계산 후 최대값 도출
-    my_score = (7 - my_stone_num) * -3 # 떨어진 우리 돌의 개수 * -3
-    opp_score = (7 - opp_stone_num) * 2 # 떨어진 상대 돌의 개수 * +2
+    my_score = (7 - my_stone_num) * -30 # 떨어진 우리 돌의 개수 * -3
+    opp_score = (7 - opp_stone_num) * 20 # 떨어진 상대 돌의 개수 * +2
+
+    if my_stone_near==0:
+        my_score+=0
+    elif 2<=my_stone_near<=6:
+        my_score+=my_stone_near
+    elif my_stone_near==7:
+        my_score+=15
+    
+    if opp_stone_near==0:
+        opp_score+=0
+    elif 2<=opp_stone_near<=6:
+        opp_score+=opp_stone_near
+    elif opp_stone_near==7:
+        opp_score+=15
+    
     total_score = my_score + opp_score # 최종 점수 도출
 
     return total_score #최종 점수 반환
@@ -23,7 +38,7 @@ def get_priority(score_list):
         #print(heap)
 
     list = []
-    for i in range(0,3): # 3개만 뽑는다
+    for i in range(0,16): # 3개만 뽑는다
         list.append(-1*heapq.heappop(heap)) # 제일 큰값을 차례대로 뽑는데 
 
     return list # 큰값 3개 뽑은거 return
