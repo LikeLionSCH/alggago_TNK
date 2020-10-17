@@ -16,7 +16,7 @@ def get_high_score_cases(filenames,count):
         for i in range(len(json_data['result'])):
             my_stones = len(json_data['result'][i]['my']) # 내 남은 돌의 개수 계산
             your_stones = len(json_data['result'][i]['your']) # 상대 남은 돌의 개수 계산
-            #isMoongchim(json_data['result'][i]['my'],json_data['result'][i]['your'])
+            isMoongchim(json_data['result'][i]['my'],json_data['result'][i]['your'])
             score = get_score(my_stones,your_stones) # 점수 계싼
             heapq.heappush( 
                 stone_info,(
@@ -41,6 +41,7 @@ def get_high_score_cases(filenames,count):
     # print("")
     # for list in case:
     #     print(list)
+    
 
     return case
     
@@ -60,7 +61,7 @@ def isMoongchim(my_position, your_position):
                 pass
             else:
                 # 두 돌 사이 거리가 작으면 추가
-                if math.sqrt(math.pow(my_position[i][0] - my_position[j][0], 2) + math.pow(my_position[i][1] - my_position[j][1], 2)) < 2*row_cell:
+                if math.sqrt(math.pow(my_position[i]['x'] - my_position[j]['x'], 2) + math.pow(my_position[i]['y'] - my_position[j]['y'], 2)) < 2.2*row_cell:
                     numOfNear_my[i].append(j)
 
     # 상대 돌 중 근접한 돌
@@ -69,7 +70,7 @@ def isMoongchim(my_position, your_position):
         numOfNear_your.append([])
         for j in range(len(your_position)):
             # 두 돌 사이 거리가 작으면 추가
-            if math.sqrt(math.pow(your_position[i][0] - your_position[j][0], 2) + math.pow(your_position[i][1] - your_position[j][1], 2)) < 2.5*row_cell:
+            if math.sqrt(math.pow(your_position[i]['x'] - your_position[j]['x'], 2) + math.pow(your_position[i]['y'] - your_position[j]['y'], 2)) < 2.2*row_cell:
                 numOfNear_your[i].append(j)
 
 
