@@ -37,6 +37,9 @@ def generate_json(prefix, my_position, your_position):
     #json저장에 사용됨
     stone = OrderedDict() 
 
+    # filename list
+    filenames = []
+
     # 각 돌에 대하여 칠 수 있는 경우 검출
     for my_idx in range(len(my_position)):
         #파일스트림(?) 초기화
@@ -84,6 +87,10 @@ def generate_json(prefix, my_position, your_position):
             stone["strength"].append({"x":ls[0], "y":ls[1]})
         with open(prefix+'stone'+str(my_idx)+'.json', 'w') as jsonFile:
             json.dump(stone, jsonFile, indent="\t")
+        filenames.append(prefix+'stone'+str(my_idx)+'.json')
+
+    print(filenames)
+    return filenames
 
 
 # get_json()함수 실행 후 simulate
