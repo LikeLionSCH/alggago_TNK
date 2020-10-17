@@ -20,7 +20,7 @@ def get_score(my_stone_num,opp_stone_num,my_stone_near,opp_stone_near):
         opp_score+=0
     elif 2<=opp_stone_near<=6:
         opp_score+=opp_stone_near
-    elif opp_stone_near==7:
+    elif opp_stone_near==7: 
         opp_score+=15
     
     total_score = my_score + opp_score # 최종 점수 도출
@@ -40,8 +40,8 @@ def get_priority(score_list,max_or_min,num_of_case):
         print(heap)
 
     list = []
-    for i in range(0,int(num_of_case)): #
-        list.append(-1*heapq.heappop(heap)) # 제일 큰값을 차례대로 뽑는데 
+    for i in range(0,int(num_of_case)): 
+        list.append(heapq.heappop(heap)*(-1*int(max_or_min))) # 제일 큰값 혹은 작은값을 차례대로 뽑는데 
 
     return list # 큰값 3개 뽑은거 return
 
@@ -59,5 +59,5 @@ for stone_info in stone_infos:
     score_info.append(get_score(int(tmp[0]),int(tmp[1]),int(tmp[2]),int(tmp[3]))) # 리스트에 추가
 priority_list = get_priority(score_info,1,5) 
 
-print("\n"+"최대값 16개")
+print("")
 print(priority_list)
