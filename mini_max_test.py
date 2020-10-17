@@ -23,7 +23,7 @@ for key in json_data["your_position"].keys():
 
 
 # 칠 수 있는 경우의 수 json파일로 추출
-def get_json(my_position, your_position):
+def generate_json(prefix, my_position, your_position):
 
     # 상대돌 개수에 따라 탐색하는 범위 조절
     if len(your_position) >= 5:
@@ -82,12 +82,12 @@ def get_json(my_position, your_position):
         stone["strength"] = []
         for ls in strength_list:
             stone["strength"].append({"x":ls[0], "y":ls[1]})
-        with open('stone'+str(my_idx)+'.json', 'w') as jsonFile:
+        with open(prefix+'stone'+str(my_idx)+'.json', 'w') as jsonFile:
             json.dump(stone, jsonFile, indent="\t")
 
 
 # get_json()함수 실행 후 simulate
-get_json(my_position, your_position)
+generate_json('',my_position, your_position)
 
 # 스레드 개수와 스레드 리스트
 thread_count = len(my_position)
