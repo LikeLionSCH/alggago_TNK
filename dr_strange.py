@@ -1,7 +1,8 @@
 import json
 import math
-from collections import OrderedDict
 import threading
+from collections import OrderedDict
+
 
 class Case:
     GAME_STATE_UNKNOWN = 0
@@ -30,6 +31,7 @@ class Case:
 
         # 그 외의 경우에는 무승부
         return GAME_STATE_PLAYING
+
 
 # 매개변수: prefix(파일 이름 접두사), my_position(), your_posotion
 def generate_json(prefix, my_position, your_position):
@@ -129,20 +131,27 @@ def predict(positions, max_layer_count, my_turn=True, prefix=''):
         if current_best_case is None:
             current_best_case = case
 
+        # 현재 케이스가 이기는 경우이면 점수를 1000점으로 설정하여 반환
         if case.game_state() == Case.GAME_STATE_WIN:
             case.score = 1000
             return case
         
+        # 현재 케이스가 지는 경우이면 점수를 0점으로 설정하여 반환
         if case.game_state() == Case.GAME_STATE_LOSE:
             case.score = 0
             return case
 
         next_turn = not my_turn
         next_prefix = prefix + f'{index}_'
+
+        # 현재 케이스를 하위 예측값의 최고 점수 케이스로 설정
         current_case = predict(next_turn, case.positions, max_layer_count, next_prefix)
+
+        # 최고점수 값을 찾는다
         if current_case.score > current_best_case.score:
             current_best_case = current_case
 
+    # 최고점을 받은 경우를 반환
     return current_best_case
 
 best_case = predict(positions, 3)
