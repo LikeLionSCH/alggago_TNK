@@ -34,14 +34,19 @@ class Case:
         return GAME_STATE_PLAYING
 
 
+# 칠 수 있는 경우의 수 json파일로 추출
 # 매개변수: prefix(파일 이름 접두사), my_position(), your_posotion
 def generate_json(prefix, my_position, your_position):
-    STONE_DIAMETER = 25
-    search_space = 10   #간격 느슨하게
-    power_list = [5]
+    # 상대돌 개수에 따라 탐색하는 범위 조절
+    search_space = 5
+    power_list = [2,7]
+    STONE_DIAMETER = 25 # 반지름
     
     #json저장에 사용됨
     stone = OrderedDict() 
+
+    # filename list
+    filenames = []
 
     # 각 돌에 대하여 칠 수 있는 경우 검출
     for my_idx in range(len(my_position)):
@@ -54,11 +59,12 @@ def generate_json(prefix, my_position, your_position):
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
             for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, search_space):
+                #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                 b1 = math.sqrt((STONE_DIAMETER*STONE_DIAMETER) - (a*a))
                 b2 = -1 * b1
 
                 # 상대 돌의 둘레 위의 점의 좌표
-                pos1 = [your_position[your_idx][0]+(2*a),your_position[your_idx][1]+(2*b1)]
+                pos1 = [your_position[your_idx][0]+(2*a),your_position[your_idx][1]+(2*b1)] # 내 돌의 지름까지 고려
                 pos2 = [your_position[your_idx][0]+(2*a),your_position[your_idx][1]+(2*b2)]
 
                 # 내 돌이 때릴 수 있는 범위는 반원임으로 때릴수 있는 부분만 리스트에 추가
@@ -72,7 +78,7 @@ def generate_json(prefix, my_position, your_position):
         strength_list = []
         for pos in locations_to_hit:
             # 각 파워도 고려
-            for power in power_list:   # 간격 느슨하게
+            for power in power_list:
                 strength_list.append( [ (pos[0]-my_position[my_idx][0]) * power, (pos[1]-my_position[my_idx][1]) * power ] )
 
         # json파일로 저장
@@ -82,6 +88,9 @@ def generate_json(prefix, my_position, your_position):
             stone["strength"].append({"x":ls[0], "y":ls[1]})
         with open(prefix+'stone'+str(my_idx)+'.json', 'w') as jsonFile:
             json.dump(stone, jsonFile, indent="\t")
+        filenames.append(prefix+'stone'+str(my_idx)+'.json')
+
+    return filenames
 
 
 # 만들어진 json파일로 시뮬레이션 돌리기
