@@ -197,11 +197,18 @@ def get_high_score_cases(filenames, count):
     for filename in filenames:
         with open(str(filename)) as json_file:
             json_data = json.load(json_file)
+
         for i in range(len(json_data['result'])):
-            my_stones = len(json_data['result'][i]['my']) # 내 남은 돌의 개수 계산
-            your_stones = len(json_data['result'][i]['your']) # 상대 남은 돌의 개수 계산
-            mc = isMoongchim(json_data['result'][i]['my'],json_data['result'][i]['your'])
-            score = get_score(my_stones,your_stones,mc['my_point'],mc['your_point']) # 점수 계싼
+            # 내 남은 돌의 개수 계산
+            my_stones = len(json_data['result'][i]['my'])
+            #  상대 남은 돌의 개수 계산
+            your_stones = len(json_data['result'][i]['your'])
+            # 뭉침 계산
+            mc = isMoongchim(json_data['result'][i]['my'], json_data['result'][i]['your'])
+             # 점수 계산
+            score = get_score(my_stones,your_stones,mc['my_point'],mc['your_point'])
+
+            # stone_info 에 튜플 형태로 힙 push 
             heapq.heappush(stone_info, (
                     (-1) * int(score), # 점수
                     stone_index, # 돌 번호
@@ -211,23 +218,20 @@ def get_high_score_cases(filenames, count):
                     json_data['result'][i]['your'], # 상대 돌의 포지션
                 )
             )
-            # stone_info 에 튜플 형태로 힙 push 
+
         stone_index += 1
     
     cases = []
 
     for i in range(0,count):
-        #cases.append(heapq.heappop(stone_info))
         tmp = heapq.heappop(stone_info)
-        case = Case(tmp[0] * (-1), [tmp[2], tmp[3]], [tmp[4], tmp[5]], tmp[1])
+
+        my_positions = list(map(lambda position: [position['x'], position['y']], tmp[4]))
+        your_positions = list(map(lambda position: [position['x'], position['y']], tmp[5]))
+        positions = [my_positions, your_positions]
+
+        case = Case(tmp[0] * (-1), [tmp[2], tmp[3]], positions, tmp[1])
         cases.append(case)
-
-
-    # for list in stone_info:
-    #     print(list)
-    # print("")
-    # for list in cases:
-    #     print(list)
     
     return cases
 
