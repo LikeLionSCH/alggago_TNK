@@ -43,11 +43,11 @@ def get_high_score_cases(filenames,count):
             # stone_info 에 튜플 형태로 힙 push 
         stone_index += 1
     
-    case = Case()
     cases = []
 
     for i in range(0,count):
         #cases.append(heapq.heappop(stone_info))
+        case = Case()
         tmp = heapq.heappop(stone_info)
         case.score = tmp[0] * (-1)
         strength = [tmp[2],tmp[3]]
