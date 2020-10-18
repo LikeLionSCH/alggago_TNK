@@ -41,7 +41,7 @@ class Case:
 def generate_json(prefix, my_position, your_position):
     # 상대돌 개수에 따라 탐색하는 범위 조절
     search_space = 5
-    power_list = [2, 7]
+    power_list = [5]
     STONE_DIAMETER = 25 # 반지름
     
     #json저장에 사용됨
@@ -187,8 +187,8 @@ def get_score(my_stone_num, opp_stone_num, my_stone_point, opp_stone_point):
     # opp_stone_num -> 남은 상대편 돌의 개수
 
     # 우리 돌을 잃으면 -3, 상대 돌을 까면 +2 => 최종 점수 계산 후 최대값 도출
-    my_score = my_stone_num * 4 + my_stone_point # 떨어진 우리 돌의 개수 * 5
-    opp_score = (7 - opp_stone_num) * 10 + opp_stone_point # 떨어진 상대 돌의 개수 * + 30
+    my_score = my_stone_num * 4  # 떨어진 우리 돌의 개수 * 5
+    opp_score = (7 - opp_stone_num) * 10 # 떨어진 상대 돌의 개수 * + 30
     
     total_score = my_score + opp_score # 최종 점수 도출
 
@@ -235,6 +235,9 @@ def get_high_score_cases(filenames, count):
             )
             priority += 1
 
+        # 다 읽은 파일 삭제
+        os.remove(filename)
+        print(filename)
     cases = []
 
     for i in range(0,count):
