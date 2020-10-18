@@ -31,7 +31,7 @@ class Simulator
         end
 
         for position in @info.positions["your"] do
-            your_positions.push([positions["x"], position["y"]])
+            your_positions.push([position["x"], position["y"]])
         end
 
         @positions = [my_positions, your_positions]
