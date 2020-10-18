@@ -22,21 +22,17 @@ class Case:
     def game_state(self):
         #남아있는 상대 돌이 없고, 우리 돌이 한개 이상 있으면 승리
         if len(self.positions[1]) <= 0 and len(self.positions[0]) > 0:
-            print('win')
             return Case.GAME_STATE_WIN
 
         # 남아있는 우리 돌이 없고, 상대 돌이 한개 이상 있으면 패배
         if len(self.positions[0]) <= 0 and len(self.positions[1]) > 0:
-            print('win')
             return Case.GAME_STATE_LOSE
 
         # 둘다 돌이 없으면 무승부
         if len(self.positions[0]) <= 0 and len(self.positions[1]) <= 0:
-            print('win')
             return Case.GAME_STATE_DRAW
 
         # 그 외의 경우에는 진행중
-        print('lose')
         return Case.GAME_STATE_PLAYING
 
 
@@ -45,7 +41,7 @@ class Case:
 def generate_json(prefix, my_position, your_position):
     # 상대돌 개수에 따라 탐색하는 범위 조절
     search_space = 5
-    power_list = [2,7]
+    power_list = [2, 7]
     STONE_DIAMETER = 25 # 반지름
     
     #json저장에 사용됨
@@ -89,6 +85,7 @@ def generate_json(prefix, my_position, your_position):
 
         # json파일로 저장
         stone["index"] = my_idx
+        stone["positions"] = [my_position, your_position]
         stone["strength"] = []
         for ls in strength_list:
             stone["strength"].append({"x": ls[0], "y": ls[1]})
@@ -183,8 +180,8 @@ def get_score(my_stone_num, opp_stone_num, my_stone_point, opp_stone_point):
     # opp_stone_num -> 남은 상대편 돌의 개수
 
     # 우리 돌을 잃으면 -3, 상대 돌을 까면 +2 => 최종 점수 계산 후 최대값 도출
-    my_score = (7 - my_stone_num) * 5 + my_stone_point # 떨어진 우리 돌의 개수 * -3
-    opp_score = (7 - opp_stone_num) * 30 + opp_stone_point # 떨어진 상대 돌의 개수 * +2
+    my_score = my_stone_num * 4 + my_stone_point # 떨어진 우리 돌의 개수 * 5
+    opp_score = (7 - opp_stone_num) * 10 + opp_stone_point # 떨어진 상대 돌의 개수 * + 30
     
     total_score = my_score + opp_score # 최종 점수 도출
 
@@ -200,7 +197,6 @@ def get_high_score_cases(filenames, count):
 
     stone_info = []
 
-    stone_index=0
     for filename in filenames:
         with open(str(filename)) as json_file:
             json_data = json.load(json_file)
@@ -208,17 +204,20 @@ def get_high_score_cases(filenames, count):
         for i in range(len(json_data['result'])):
             # 내 남은 돌의 개수 계산
             my_stones = len(json_data['result'][i]['my'])
+
             #  상대 남은 돌의 개수 계산
             your_stones = len(json_data['result'][i]['your'])
+
             # 뭉침 계산
             # mc = isMoongchim(json_data['result'][i]['my'], json_data['result'][i]['your'])
+
             # 점수 계산
             score = get_score(my_stones, your_stones, 0, 0)
 
             # stone_info 에 튜플 형태로 힙 push 
             heapq.heappush(stone_info, (
                     (-1) * int(score), # 점수
-                    stone_index, # 돌 번호
+                    json_data['index'], # 돌 번호
                     json_data['strength'][i]['x'], # 돌의 x 세기
                     json_data['strength'][i]['y'], # 돌의 y 세기
                     json_data['result'][i]['my'], # 내 돌의 포지션
@@ -226,8 +225,6 @@ def get_high_score_cases(filenames, count):
                 )
             )
 
-        stone_index += 1
-    
     cases = []
 
     for i in range(0,count):

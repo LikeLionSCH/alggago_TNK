@@ -3,7 +3,7 @@ require 'chipmunk'
 
 
 class SimulateInfo
-    attr_accessor :filename, :index, :sample_strength
+    attr_accessor :filename, :index, :positions, :sample_strength
 
     def initialize(filename)
         # 시뮬레이션 데이터 파일 읽기
@@ -12,6 +12,7 @@ class SimulateInfo
 
         @filename = filename
         @index = json_data["index"]
+        @positions = json_data["positions"]
         @sample_strength = json_data["strength"]
     end
 end
@@ -21,20 +22,16 @@ class Simulator
     def initialize(info)
         @info = info
 
-        # 게임 현황 데이터 파일 읽기
-        file = File.read('temp.json')
-        json_data = JSON.parse(file)
-
         # 데이터 파일로부터 내 돌과 상대 돌의 위치정보 추출
         my_positions = Array.new
         your_positions = Array.new
 
-        for key in json_data["my_position"].keys do
-            my_positions.push(json_data["my_position"][key])
+        for position in @info.positions["my"] do
+            my_positions.push([position["x"], position["y"]])
         end
 
-        for key in json_data["your_position"].keys do
-            your_positions.push(json_data["your_position"][key])
+        for position in @info.positions["your"] do
+            your_positions.push([positions["x"], position["y"]])
         end
 
         @positions = [my_positions, your_positions]
