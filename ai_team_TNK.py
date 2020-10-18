@@ -22,17 +22,21 @@ class Case:
     def game_state(self):
         #남아있는 상대 돌이 없고, 우리 돌이 한개 이상 있으면 승리
         if len(self.positions[1]) <= 0 and len(self.positions[0]) > 0:
+            print('win')
             return Case.GAME_STATE_WIN
 
         # 남아있는 우리 돌이 없고, 상대 돌이 한개 이상 있으면 패배
         if len(self.positions[0]) <= 0 and len(self.positions[1]) > 0:
+            print('win')
             return Case.GAME_STATE_LOSE
 
         # 둘다 돌이 없으면 무승부
         if len(self.positions[0]) <= 0 and len(self.positions[1]) <= 0:
+            print('win')
             return Case.GAME_STATE_DRAW
 
-        # 그 외의 경우에는 무승부
+        # 그 외의 경우에는 진행중
+        print('lose')
         return Case.GAME_STATE_PLAYING
 
 
@@ -60,7 +64,7 @@ def generate_json(prefix, my_position, your_position):
 
         for your_idx in range(len(your_position)):
             #상대 돌 원의 둘레(절반)의 좌표의 집합을 구하여 locations_to_hit에 삽입
-            for a in range(-1*STONE_DIAMETER, STONE_DIAMETER+1, search_space):
+            for a in range(-1 * STONE_DIAMETER, STONE_DIAMETER + 1, search_space):
                 #원의 중심과, 둘레 위의 점의 거리는 반지름을 이용하여 a,b공식화
                 b1 = math.sqrt((STONE_DIAMETER*STONE_DIAMETER) - (a*a))
                 b2 = -1 * b1
@@ -113,6 +117,9 @@ def simulate(filenames):
 
 
 def isMoongchim(my_position, your_position):
+    if len(my_position) <= 0 or len(your_position) <= 0:
+        return {'my_point': 1000, "your_point": 0}
+
     width, height= 1000, 700
     row_cell = width / 20
     high_cell = height / 20
@@ -176,8 +183,8 @@ def get_score(my_stone_num, opp_stone_num, my_stone_point, opp_stone_point):
     # opp_stone_num -> 남은 상대편 돌의 개수
 
     # 우리 돌을 잃으면 -3, 상대 돌을 까면 +2 => 최종 점수 계산 후 최대값 도출
-    my_score = (7 - my_stone_num) * -30 + my_stone_point # 떨어진 우리 돌의 개수 * -3
-    opp_score = (7 - opp_stone_num) * 20 + opp_stone_point # 떨어진 상대 돌의 개수 * +2
+    my_score = (7 - my_stone_num) * 5 + my_stone_point # 떨어진 우리 돌의 개수 * -3
+    opp_score = (7 - opp_stone_num) * 30 + opp_stone_point # 떨어진 상대 돌의 개수 * +2
     
     total_score = my_score + opp_score # 최종 점수 도출
 
@@ -204,9 +211,9 @@ def get_high_score_cases(filenames, count):
             #  상대 남은 돌의 개수 계산
             your_stones = len(json_data['result'][i]['your'])
             # 뭉침 계산
-            mc = isMoongchim(json_data['result'][i]['my'], json_data['result'][i]['your'])
-             # 점수 계산
-            score = get_score(my_stones,your_stones,mc['my_point'],mc['your_point'])
+            # mc = isMoongchim(json_data['result'][i]['my'], json_data['result'][i]['your'])
+            # 점수 계산
+            score = get_score(my_stones, your_stones, 0, 0)
 
             # stone_info 에 튜플 형태로 힙 push 
             heapq.heappush(stone_info, (
@@ -269,6 +276,10 @@ def predict(positions, max_layer_count, my_turn=True, prefix=''):
             case.score = 0
             return case
 
+        if case.game_state() == Case.GAME_STATE_DRAW:
+            case.score = 1000
+            return case
+
         next_turn = not my_turn
         next_prefix = prefix + f'{index}_'
 
@@ -304,7 +315,7 @@ def main():
     best_case = predict(positions, 3)
 
     #Return values
-    message = "tean_TKN"
+    message = "team_TNK"
     result = [best_case.index, best_case.strength[0], best_case.strength[1], message]
 
     print(str(result)[1:-1].replace("'", ""))

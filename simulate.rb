@@ -62,15 +62,21 @@ class Simulator
             end
 
             # 결과 데이터를 hash에 저장
-            json_data["result"].push({
-                "my" => @alggago.players[0].stones.map { |stone| { "x" => stone.body.p.x, "y" => stone.body.p.y} },
-                "your" => @alggago.players[1].stones.map { |stone| { "x" => stone.body.p.x, "y" => stone.body.p.y } }
-            })
+            my = []
+            your = []
 
-            # 돌의 개수가 줄어든 시뮬레이션 결과가 있으면 해당 결과 출력
-            # if @alggago.players[0].stones.length < 7 or @alggago.players[1].stones.length < 7
-            #     puts("black(AI): #{@alggago.players[0].stones.length}, white(User): #{@alggago.players[1].stones.length}")
-            # end
+            if @alggago.players[0].stones.length > 0
+                my = @alggago.players[0].stones.map { |stone| { "x" => stone.body.p.x, "y" => stone.body.p.y } }
+            end
+
+            if @alggago.players[1].stones.length > 0
+                your = @alggago.players[1].stones.map { |stone| { "x" => stone.body.p.x, "y" => stone.body.p.y } }
+            end
+
+            json_data["result"].push({
+                "my" => my,
+                "your" => your
+            })
         end
 
         # 전체 시뮬레이션 결과를 파일로 출력
@@ -173,7 +179,7 @@ class Player
                 (stone.body.p.x + STONE_DIAMETER/2.0 < 0) or
                 (stone.body.p.y + STONE_DIAMETER/2.0 > HEIGHT) or
                 (stone.body.p.y + STONE_DIAMETER/2.0 < 0)
-            stone.should_delete = true
+                stone.should_delete = true
             end
         end
     end
