@@ -9,7 +9,7 @@ require 'rbconfig'
 
 WIDTH, HEIGHT = 1000, 700
 TICK = 1.0/60.0
-NUM_STONES = 3
+NUM_STONES = 2
 PLAYER_COLOR = ["black", "white"]
 STONE_DIAMETER = 50
 RESTITUTION = 0.9

@@ -187,8 +187,8 @@ def get_score(my_stone_num, opp_stone_num, my_stone_point, opp_stone_point):
     # opp_stone_num -> 남은 상대편 돌의 개수
 
     # 우리 돌을 잃으면 -3, 상대 돌을 까면 +2 => 최종 점수 계산 후 최대값 도출
-    my_score = my_stone_num * 4  # 떨어진 우리 돌의 개수 * 5
-    opp_score = (7 - opp_stone_num) * 10 # 떨어진 상대 돌의 개수 * + 30
+    my_score = my_stone_num * 10  # 떨어진 우리 돌의 개수 * 5
+    opp_score = (7 - opp_stone_num) * 30 # 떨어진 상대 돌의 개수 * + 30
     
     total_score = my_score + opp_score # 최종 점수 도출
 
@@ -202,55 +202,38 @@ def get_high_score_cases(filenames, count):
     # filenames -> json파일의 이름을 list로 입력
     # count -> 몇개의 케이스를 반환할지 정해주는 매개변수
 
-    stone_info = []
+    cases = []
 
     for filename in filenames:
         with open(str(filename)) as json_file:
             json_data = json.load(json_file)
 
-        priority = 0
-        for i in range(len(json_data['result'])):
-            # 내 남은 돌의 개수 계산
-            my_stones = len(json_data['result'][i]['my'])
+            for i in range(len(json_data['result'])):
+                # 내 남은 돌의 개수 계산
+                my_stones = len(json_data['result'][i]['my'])
 
-            #  상대 남은 돌의 개수 계산
-            your_stones = len(json_data['result'][i]['your'])
+                #  상대 남은 돌의 개수 계산
+                your_stones = len(json_data['result'][i]['your'])
 
-            # 뭉침 계산
-            # mc = isMoongchim(json_data['result'][i]['my'], json_data['result'][i]['your'])
+                # 뭉침 계산
+                # mc = isMoongchim(json_data['result'][i]['my'], json_data['result'][i]['your'])
 
-            # 점수 계산
-            score = get_score(my_stones, your_stones, 0, 0)
-
-            # stone_info 에 튜플 형태로 힙 push 
-            heapq.heappush(stone_info, (
-                    (-1) * int(score), # 점수
-                    priority,
-                    json_data['index'], # 돌 번호
-                    json_data['strength'][i]['x'], # 돌의 x 세기
-                    json_data['strength'][i]['y'], # 돌의 y 세기
-                    json_data['result'][i]['my'], # 내 돌의 포지션
-                    json_data['result'][i]['your'], # 상대 돌의 포지션
-                )
-            )
-            priority += 1
+                # 점수 계산
+                # score = get_score(my_stones, your_stones, 0, 0)
+                score = 7 - your_stones
+                strength = [json_data['strength'][i]['x'], json_data['strength'][i]['y']]
+                my_positions = list(map(lambda position: [position['x'], position['y']], json_data['result'][i]['my']))
+                your_positions = list(map(lambda position: [position['x'], position['y']], json_data['result'][i]['your']))
+                positions = [my_positions, your_positions]
+                case = Case(score, strength, positions, json_data['index'])
+                cases.append(case)
 
         # 다 읽은 파일 삭제
         os.remove(filename)
-        print(filename)
-    cases = []
 
-    for i in range(0,count):
-        tmp = heapq.heappop(stone_info)
-
-        my_positions = list(map(lambda position: [position['x'], position['y']], tmp[5]))
-        your_positions = list(map(lambda position: [position['x'], position['y']], tmp[6]))
-        positions = [my_positions, your_positions]
-
-        case = Case(tmp[0] * (-1), [tmp[3], tmp[4]], positions, tmp[2])
-        cases.append(case)
+    cases.sort(key=lambda case: case.score)
     
-    return cases
+    return cases[0:count]
 
 
 def predict(positions, max_layer_count, my_turn=True, prefix=''):
@@ -268,40 +251,42 @@ def predict(positions, max_layer_count, my_turn=True, prefix=''):
     # 시뮬레이션 한 결과값에서 가장 높은 점수를 받은 상위 n개 경우를 찾기
     cases = get_high_score_cases(json_filenames, max_layer_count)
 
-    current_best_case = None
+    return cases[0]
 
-    # 찾은 경우의 수만큼 반복
-    for index, case in enumerate(cases, 1):
-        # 최고의 경우를 찾지 못했다면 현재 경우를 최고의 경우로 설정
-        if current_best_case is None:
-            current_best_case = case
+    # current_best_case = None
 
-        # 현재 케이스가 이기는 경우이면 점수를 1000점으로 설정하여 반환
-        if case.game_state() == Case.GAME_STATE_WIN:
-            case.score = 1000
-            return case
+    # # 찾은 경우의 수만큼 반복
+    # for index, case in enumerate(cases, 1):
+    #     # 최고의 경우를 찾지 못했다면 현재 경우를 최고의 경우로 설정
+    #     if current_best_case is None:
+    #         current_best_case = case
+
+    #     # 현재 케이스가 이기는 경우이면 점수를 1000점으로 설정하여 반환
+    #     if case.game_state() == Case.GAME_STATE_WIN:
+    #         case.score = 1000
+    #         return case
         
-        # 현재 케이스가 지는 경우이면 점수를 0점으로 설정하여 반환
-        if case.game_state() == Case.GAME_STATE_LOSE:
-            case.score = 0
-            return case
+    #     # 현재 케이스가 지는 경우이면 점수를 0점으로 설정하여 반환
+    #     if case.game_state() == Case.GAME_STATE_LOSE:
+    #         case.score = 0
+    #         return case
 
-        if case.game_state() == Case.GAME_STATE_DRAW:
-            case.score = 1000
-            return case
+    #     if case.game_state() == Case.GAME_STATE_DRAW:
+    #         case.score = 1000
+    #         return case
 
-        next_turn = not my_turn
-        next_prefix = prefix + f'{index}_'
+    #     next_turn = not my_turn
+    #     next_prefix = prefix + f'{index}_'
 
-        # 현재 케이스를 하위 예측값의 최고 점수 케이스로 설정
-        current_case = predict(case.positions, max_layer_count, next_turn, next_prefix)
+    #     # 현재 케이스를 하위 예측값의 최고 점수 케이스로 설정
+    #     current_score = predict(case.positions, max_layer_count, next_turn, next_prefix).score
 
-        # 최고점수 값을 찾는다
-        if current_case.score > current_best_case.score:
-            current_best_case = current_case
+    #     # 최고점수 값을 찾는다
+    #     if current_case.score > current_best_case.score:
+    #         current_best_case = current_case
 
-    # 최고점을 받은 경우를 반환
-    return current_best_case
+    # # 최고점을 받은 경우를 반환
+    # return current_best_case
 
 
 def main():
