@@ -85,7 +85,7 @@ def generate_json(prefix, my_position, your_position):
 
         # json파일로 저장
         stone["index"] = my_idx
-        stone["positions"] = {'my':[], 'your':[]}
+        stone["positions"] = {'my': [], 'your': []}
         stone["strength"] = []
 
         #현재 위치 json에 추가
@@ -208,6 +208,7 @@ def get_high_score_cases(filenames, count):
         with open(str(filename)) as json_file:
             json_data = json.load(json_file)
 
+        priority = 0
         for i in range(len(json_data['result'])):
             # 내 남은 돌의 개수 계산
             my_stones = len(json_data['result'][i]['my'])
@@ -224,6 +225,7 @@ def get_high_score_cases(filenames, count):
             # stone_info 에 튜플 형태로 힙 push 
             heapq.heappush(stone_info, (
                     (-1) * int(score), # 점수
+                    priority,
                     json_data['index'], # 돌 번호
                     json_data['strength'][i]['x'], # 돌의 x 세기
                     json_data['strength'][i]['y'], # 돌의 y 세기
@@ -231,17 +233,18 @@ def get_high_score_cases(filenames, count):
                     json_data['result'][i]['your'], # 상대 돌의 포지션
                 )
             )
+            priority += 1
 
     cases = []
 
     for i in range(0,count):
         tmp = heapq.heappop(stone_info)
 
-        my_positions = list(map(lambda position: [position['x'], position['y']], tmp[4]))
-        your_positions = list(map(lambda position: [position['x'], position['y']], tmp[5]))
+        my_positions = list(map(lambda position: [position['x'], position['y']], tmp[5]))
+        your_positions = list(map(lambda position: [position['x'], position['y']], tmp[6]))
         positions = [my_positions, your_positions]
 
-        case = Case(tmp[0] * (-1), [tmp[2], tmp[3]], positions, tmp[1])
+        case = Case(tmp[0] * (-1), [tmp[3], tmp[4]], positions, tmp[2])
         cases.append(case)
     
     return cases
