@@ -1,6 +1,7 @@
 import json
 import math
 import heapq
+from dr_strange import Case
 
 """
 선생님들 고생 많으셨습니다...
@@ -31,7 +32,7 @@ def get_high_score_cases(filenames,count):
             score = get_score(my_stones,your_stones,mc['my_point'],mc['your_point']) # 점수 계싼
             heapq.heappush( 
                 stone_info,(
-                    score, # 점수
+                    (-1) * int(score), # 점수
                     stone_index, # 돌 번호
                     json_data['strength'][i]['x'], # 돌의 x 세기
                     json_data['strength'][i]['y'], # 돌의 y 세기
@@ -42,18 +43,28 @@ def get_high_score_cases(filenames,count):
             # stone_info 에 튜플 형태로 힙 push 
         stone_index += 1
     
-    case = []
+    case = Case()
+    cases = []
+
     for i in range(0,count):
-        case.append(heapq.heappop(stone_info))
+        #cases.append(heapq.heappop(stone_info))
+        tmp = heapq.heappop(stone_info)
+        case.score = tmp[0] * (-1)
+        strength = [tmp[2],tmp[3]]
+        case.strength = strength
+        positon = [tmp[4],tmp[5]]
+        case.positions = positon
+        case.index = tmp[1]
+        cases.append(case)
 
 
-    for list in stone_info:
-        print(list)
-    print("")
-    for list in case:
-        print(list)
+    # for list in stone_info:
+    #     print(list)
+    # print("")
+    # for list in cases:
+    #     print(list)
     
-    return case
+    return cases
     
 
 
