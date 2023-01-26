@@ -13,3 +13,13 @@ ruby alggago.rb
 # 기타
 - 윈도우에서 정상 실행 가능
 - 한글 폰트 깨짐 문제 있음(R: 새로 시작하기, P: 턴 넘기기, N: 다음 턴 연산하기)
+
+<br>
+
+# 결과
+
+2020 멋쟁이 사자처럼 알까고 대회 준우승
+
+<img src="https://user-images.githubusercontent.com/64102831/214782770-1c5236d2-395c-42cc-afb2-4e457e7fff75.PNG" width="700">
+
+[유튜브 실시간 중계](https://youtu.be/v4i_xhu78wA)
