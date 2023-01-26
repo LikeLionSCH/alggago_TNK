@@ -17,5 +17,5 @@ ruby alggago.rb
 <br>
 <br>
 # 결과
-2020 멋쟁이 사자처럼 알까고 대회 준우승  
-![알까고 수상](https://user-images.githubusercontent.com/64102831/214782770-1c5236d2-395c-42cc-afb2-4e457e7fff75.PNG)
+2020 멋쟁이 사자처럼 알까고 대회 준우승   
+![알까고 수상](https://user-images.githubusercontent.com/64102831/214782770-1c5236d2-395c-42cc-afb2-4e457e7fff75.PNG)   
