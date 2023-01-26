@@ -21,4 +21,4 @@ ruby alggago.rb
 
 <img src="https://user-images.githubusercontent.com/64102831/214782770-1c5236d2-395c-42cc-afb2-4e457e7fff75.PNG" width="700">
 
-[streaming](https://youtu.be/v4i_xhu78wA)
+[#스트리밍](https://youtu.be/v4i_xhu78wA)
